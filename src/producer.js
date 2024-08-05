@@ -1,11 +1,6 @@
 const { kafka } = require("./client");
 
-const readline = require("readline");
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const messages = require("./data/input.json");
 
 async function init() {
   const producer = kafka.producer();
@@ -14,25 +9,18 @@ async function init() {
   await producer.connect();
   console.log("Producer Connected Successfully");
 
-  rl.setPrompt("> ");
-  rl.prompt();
-
-  rl.on("line", async function (line) {
-    const [riderName, location] = line.split(" ");
-
-    await producer.send({
-      topic: "rider-updates",
+  let i = 0;
+  setInterval(async () => {
+    i = i >= messages.length - 1 ? 0 : i + 1;
+    const payloads = {
+      topic: "coronavirus-updates",
       messages: [
-        {
-          key: "location-update",
-          partition: location.toLowerCase() == "north" ? 0 : 1,
-          value: JSON.stringify({ name: riderName, location: location }),
-        },
+        { key: "coronavirus-alert", value: JSON.stringify(messages[i]) },
       ],
-    });
-  }).on("close", async () => {
-    await producer.disconnect();
-  });
+    };
+    console.log("payloads =============>", payloads);
+    await producer.send(payloads);
+  }, 5000);
 }
 
 init();

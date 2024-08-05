@@ -6,7 +6,7 @@
   "scripts": {
     "start-admin": "node src/admin.js",
     "start-producer": "node src/producer.js",
-    "start-consumer": "node src/consumer.js user-1"
+    "start-consumer": "node src/consumer.js"
   },
   "keywords": [],
   "author": "",
